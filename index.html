@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSC MockMaster - Live CBT Prep & Leaderboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
+    .header { background: var(--surface); padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
+    .header h1 { font-size: 1.2rem; color: var(--accent); }
+    .user-tag { font-size: 0.85rem; color: var(--text-muted); }
+    .container { max-width: 600px; margin: 20px auto; padding: 0 16px; }
+    .card { background: var(--surface); border-radius: 12px; padding: 20px; margin-bottom: 16px; border: 1px solid #334155; }
+    .btn { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
+    .btn-secondary { background: #334155; margin-top: 8px; }
+    input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; }
+    .podium { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+    .podium-card { flex: 1; background: #243248; border-radius: 10px; padding: 12px; text-align: center; border-top: 4px solid var(--accent); }
+    .rank-num { font-size: 1.1rem; font-weight: bold; margin-bottom: 4px; }
+    .score-badge { color: var(--accent); font-weight: bold; font-size: 0.9rem; }
+    .footer { text-align: center; padding: 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid #1e293b; margin-top: 40px; }
+    .footer a { color: var(--primary); text-decoration: none; margin: 0 8px; }
+    .ad-placeholder { border: 2px dashed #475569; border-radius: 8px; padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 16px 0; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>SSC MockMaster</h1>
+    <div id="userStatus" class="user-tag">Not Signed In</div>
+  </header>
+
+  <main class="container">
+    <section id="authSection" class="card">
+      <h2 style="margin-bottom: 12px;">Student Portal</h2>
+      <input type="email" id="authEmail" placeholder="Enter Gmail ID">
+      <input type="password" id="authPass" placeholder="Password (min 6 chars)">
+      <button class="btn" id="btnSignIn">Sign In</button>
+      <button class="btn btn-secondary" id="btnSignUp">Create Student Account</button>
+      <p id="authMsg" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px;"></p>
+    </section>
+
+    <section id="quizSection" class="card hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:bold; color:var(--accent);">Daily Practice Quiz (+2 / -0.5)</span>
+        <button id="btnLogout" style="background:none; border:none; color:#ef4444; cursor:pointer;">Logout</button>
+      </div>
+      <div style="margin-top:16px;">
+        <p>Q1. Which constitutional article deals with Fundamental Duties in India?</p>
+        <div style="margin:12px 0;">
+          <label style="display:block; margin:6px 0;"><input type="radio" name="q1" value="A"> A) Article 21A</label>
+          <label style="display:block; margin:6px 0;"><input type="radio" name="q1" value="B"> B) Article 51A</label>
+          <label style="display:block; margin:6px 0;"><input type="radio" name="q1" value="C"> C) Article 32</label>
+          <label style="display:block; margin:6px 0;"><input type="radio" name="q1" value="D"> D) Article 44</label>
+        </div>
+      </div>
+      <button class="btn" id="btnSubmitQ">Submit Answer</button>
+    </section>
+
+    <div class="ad-placeholder">
+      Google AdSense Ad Slot (Active after Approval)
+    </div>
+
+    <section class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>🏆 All India Rank (AIR)</h2>
+        <button id="btnRefreshRank" style="background:none; border:none; color:var(--primary); cursor:pointer;">↻ Refresh</button>
+      </div>
+      <div class="podium">
+        <div class="podium-card"><div class="rank-num">🥇 Rank 1</div><div id="p1Email">---</div><div class="score-badge" id="p1Score">0 pts</div></div>
+        <div class="podium-card"><div class="rank-num">🥈 Rank 2</div><div id="p2Email">---</div><div class="score-badge" id="p2Score">0 pts</div></div>
+        <div class="podium-card"><div class="rank-num">🥉 Rank 3</div><div id="p3Email">---</div><div class="score-badge" id="p3Score">0 pts</div></div>
+      </div>
+      <div id="leaderList" style="margin-top:12px; font-size:0.9rem;"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 SSC MockMaster. Independent preparation platform.</p>
+    <p style="margin-top:6px;">
+      <a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a> • <a href="#">About Us</a> • <a href="#">Contact Us</a>
+    </p>
+  </footer>
+
+  <script type="module">
+    import { 
+      auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+      sendEmailVerification, signOut, onAuthStateChanged, collection, 
+      doc, setDoc, query, orderBy, limit, getDocs, serverTimestamp 
+    } from './firebase.js';
+
+    let currentUser = null;
+
+    const authSection = document.getElementById('authSection');
+    const quizSection = document.getElementById('quizSection');
+    const userStatus = document.getElementById('userStatus');
+    const authMsg = document.getElementById('authMsg');
+
+    function mask(email) {
+      if(!email) return "Aspirant";
+      const parts = email.split('@');
+      return parts[0].slice(0, 3) + '***@' + (parts[1] || 'gmail.com');
+    }
+
+    document.getElementById('btnSignUp').addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const pass = document.getElementById('authPass').value;
+      authMsg.textContent = "";
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await sendEmailVerification(cred.user);
+        await setDoc(doc(db, "users", cred.user.uid), {
+          uid: cred.user.uid,
+          email: email,
+          totalScore: 0,
+          createdAt: serverTimestamp()
+        });
+        await signOut(auth);
+        alert("Account Created! Check Inbox/Spam for verification email.");
+      } catch(err) {
+        authMsg.textContent = err.message;
+      }
+    });
+
+    document.getElementById('btnSignIn').addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const pass = document.getElementById('authPass').value;
+      authMsg.textContent = "";
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, pass);
+        if(!cred.user.emailVerified) {
+          await signOut(auth);
+          alert("Please verify your email before logging in!");
+        }
+      } catch(err) {
+        authMsg.textContent = err.message;
+      }
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if(user && user.emailVerified) {
+        authSection.classList.add('hidden');
+        quizSection.classList.remove('hidden');
+        userStatus.textContent = mask(user.email);
+      } else {
+        authSection.classList.remove('hidden');
+        quizSection.classList.add('hidden');
+        userStatus.textContent = "Not Signed In";
+      }
+      loadLeaderboard();
+    });
+
+    async function loadLeaderboard() {
+      try {
+        const q = query(collection(db, "users"), orderBy("totalScore", "desc"), limit(50));
+        const snap = await getDocs(q);
+        const users = [];
+        snap.forEach(d => users.push(d.data()));
+
+        if(users[0]) { document.getElementById('p1Email').textContent = mask(users[0].email); document.getElementById('p1Score').textContent = (users[0].totalScore || 0) + ' pts'; }
+        if(users[1]) { document.getElementById('p2Email').textContent = mask(users[1].email); document.getElementById('p2Score').textContent = (users[1].totalScore || 0) + ' pts'; }
+        if(users[2]) { document.getElementById('p3Email').textContent = mask(users[2].email); document.getElementById('p3Score').textContent = (users[2].totalScore || 0) + ' pts'; }
+
+        let html = "";
+        for(let i = 3; i < users.length; i++) {
+          html += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #334155;">
+            <span>#${i+1} ${mask(users[i].email)}</span>
+            <span style="color:var(--accent); font-weight:bold;">${users[i].totalScore || 0} pts</span>
+          </div>`;
+        }
+        document.getElementById('leaderList').innerHTML = html;
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    document.getElementById('btnRefreshRank').addEventListener('click', loadLeaderboard);
+  </script>
+</body>
+</html>
