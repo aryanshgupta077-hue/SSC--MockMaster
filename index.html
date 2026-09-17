@@ -189,6 +189,32 @@
     }
 
     document.getElementById('btnRefreshRank').addEventListener('click', loadLeaderboard);
+    async function submitAnswer() {
+  const selected = document.querySelector('input[name="quizOption"]:checked');
+  if (!selected) {
+    alert("Kripya koi ek option chunein!");
+    return;
+  }
+  
+  const isCorrect = (selected.value === "B");
+  const scoreChange = isCorrect ? 2 : -0.5;
+
+  alert(isCorrect ? "Correct Answer! (+2)" : "Wrong Answer! (-0.5)");
+
+  if (currentUser) {
+    try {
+      const userRef = doc(db, "users", currentUser.uid);
+      await setDoc(userRef, {
+        email: currentUser.email,
+        totalScore: (currentUser.totalScore || 0) + scoreChange,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      loadLeaderboard();
+    } catch (err) {
+      console.error("Score save error:", err);
+    }
+  }
+}
  const submitBtn = document.getElementById('btnSubmitQ');
 if (submitBtn) {
   submitBtn.addEventListener('click', submitAnswer);
